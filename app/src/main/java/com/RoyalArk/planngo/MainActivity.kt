@@ -15,7 +15,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.RoyalArk.planngo.screen.auth.CreateAccountScreen
+import com.RoyalArk.planngo.screen.auth.SignInScreen
 import com.RoyalArk.planngo.screen.auth.WelcomeScreen
+import com.RoyalArk.planngo.screen.home.HomeScreen
 import com.RoyalArk.planngo.ui.theme.PlanNGoTheme
 
 class MainActivity : ComponentActivity() {
@@ -28,10 +31,19 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
-                        startDestination = "welcome",
+                        startDestination = "signIn",
                         builder = {
                             composable("welcome"){
                                 WelcomeScreen()
+                            }
+                            composable("signIn") {
+                                SignInScreen(navController)
+                            }
+                            composable("CreateAccountScreen") {
+                                CreateAccountScreen(navController)
+                            }
+                            composable("home"){
+                                HomeScreen()
                             }
                         }
                     )
