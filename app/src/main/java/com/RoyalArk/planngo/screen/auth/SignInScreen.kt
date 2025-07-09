@@ -47,6 +47,7 @@ import androidx.core.app.ComponentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.RoyalArk.planngo.R
+import com.RoyalArk.planngo.Routes
 import com.RoyalArk.planngo.viewmodel.AuthState
 import com.RoyalArk.planngo.viewmodel.AuthViewModel
 
@@ -63,8 +64,8 @@ fun SignInScreen(navController: NavController, authViewModel: AuthViewModel = vi
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.Authenticated -> {
-                navController.navigate("home") {
-                    popUpTo("signIn") { inclusive = true }
+                navController.navigate(Routes.HomeScreen) {
+                    popUpTo(Routes.SignInScreen) { inclusive = true }
                 }
             }
 
@@ -131,7 +132,7 @@ fun SignInScreen(navController: NavController, authViewModel: AuthViewModel = vi
                 text = "Sign in",
                 fontWeight = FontWeight.Bold,
                 fontSize = 35.sp,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.primary
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -169,6 +170,7 @@ fun SignInScreen(navController: NavController, authViewModel: AuthViewModel = vi
                     authViewModel.signIn(email.trim(), password.trim())
                 },
                 modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
             ) {
                 Text(
@@ -190,9 +192,9 @@ fun SignInScreen(navController: NavController, authViewModel: AuthViewModel = vi
                     text = "Create One",
                     fontWeight = FontWeight.Bold,
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.clickable {
-                        navController.navigate("CreateAccountScreen")
+                        navController.navigate(Routes.CreateAccountScreen)
                     }
                 )
             }

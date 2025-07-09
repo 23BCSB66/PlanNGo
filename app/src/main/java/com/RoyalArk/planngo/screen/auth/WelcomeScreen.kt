@@ -6,19 +6,19 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import com.RoyalArk.planngo.Routes
 
 
 @Composable
-fun WelcomeScreen() {
+fun WelcomeScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 87.dp),
+            .padding(horizontal = 20.dp, vertical = 120.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
@@ -41,13 +41,15 @@ fun WelcomeScreen() {
 
         Text(
             text = "Existing  customer / Get started",
-            fontSize = 18.sp,
+            fontSize = 15.sp,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
         Button(
-            onClick = {},
+            onClick = {
+                navController.navigate(Routes.SignInScreen)
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary
             ),
@@ -69,27 +71,22 @@ fun WelcomeScreen() {
         ) {
             Text(
                 text = "New customer? ",
-                fontSize = 18.sp,
+                fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onBackground
             )
             TextButton(
-                onClick = {},
+                onClick = {
+                    navController.navigate(Routes.CreateAccountScreen)
+                },
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Text(
                     text = "Create new account",
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun WelcomeScreenPreview() {
-    MaterialTheme {
-        WelcomeScreen()
     }
 }

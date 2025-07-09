@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.RoyalArk.planngo.Routes
 import com.RoyalArk.planngo.viewmodel.AuthState
 import com.RoyalArk.planngo.viewmodel.AuthViewModel
 import com.RoyalArk.planngo.viewmodel.UserViewModel
@@ -64,7 +65,7 @@ fun CreateAccountScreen(
 
     LaunchedEffect(authState.value) {
         when (authState.value) {
-            is AuthState.Error -> Toast.makeText(
+            is AuthState.Error -> makeText(
                 context,
                 (authState.value as AuthState.Error).message,
                 Toast.LENGTH_SHORT
@@ -104,7 +105,7 @@ fun CreateAccountScreen(
             text = "Create Account",
             fontWeight = FontWeight.Bold,
             fontSize = 35.sp,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -176,8 +177,8 @@ fun CreateAccountScreen(
                             email = email.trim(),
                             onResult = { success, error ->
                                 if (success) {
-                                    navController.navigate("home"){
-                                        popUpTo("CreateAccountScreen"){inclusive = true}
+                                    navController.navigate(Routes.HomeScreen) {
+                                        popUpTo(Routes.CreateAccountScreen) { inclusive = true }
                                     }
                                 } else {
                                     makeText(
@@ -193,6 +194,7 @@ fun CreateAccountScreen(
             },
             enabled = authState.value != AuthState.Loading,
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
         ) {
             Text(
@@ -216,7 +218,7 @@ fun CreateAccountScreen(
                 fontSize = 10.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.clickable {
-                    navController.navigate("ForgotPasswordScreen")
+
                 }
             )
         }

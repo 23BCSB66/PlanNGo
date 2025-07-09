@@ -31,18 +31,18 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
-                        startDestination = "signIn",
+                        startDestination = Routes.WelcomeScreen,
                         builder = {
-                            composable("welcome"){
-                                WelcomeScreen()
+                            composable(Routes.WelcomeScreen) {
+                                WelcomeScreen(navController)
                             }
-                            composable("signIn") {
+                            composable(Routes.SignInScreen) {
                                 SignInScreen(navController)
                             }
-                            composable("CreateAccountScreen") {
+                            composable(Routes.CreateAccountScreen) {
                                 CreateAccountScreen(navController)
                             }
-                            composable("home"){
+                            composable(Routes.HomeScreen) {
                                 HomeScreen()
                             }
                         }
@@ -51,4 +51,12 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+
+object Routes {
+    var WelcomeScreen = "WelcomeScreen"
+    var SignInScreen = "SignInScreen"
+    var CreateAccountScreen = "CreateAccountScreen"
+    var HomeScreen = "HomeScreen"
 }
