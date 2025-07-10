@@ -1,19 +1,94 @@
+
 package com.RoyalArk.planngo.screen.home
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Text
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.RoyalArk.planngo.Routes
+import com.google.firebase.auth.FirebaseAuth
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Home Screen", color = MaterialTheme.colorScheme.onBackground)
+fun HomeScreen(navController: NavController) {
+    val user = FirebaseAuth.getInstance().currentUser
+    val displayName = user?.displayName ?: "Traveler"
+
+    val trips = remember {
+        mutableStateOf(
+            listOf("Goa Trip", "Manali Tour", "Europe Backpacking")
+        )
+    }
+
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                // TODO: Navigate to CreateTripScreen
+            }) {
+                Text("+")
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            // 🔹 Custom Header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text("Hi, $displayName!", fontSize = 24.sp)
+                    Text("Plan your next trip easily.")
+                }
+
+                Button(onClick = {
+                    FirebaseAuth.getInstance().signOut()
+                    navController.navigate(Routes.WelcomeScreen) {
+                        popUpTo(Routes.HomeScreen) { inclusive = true }
+                    }
+                }) {
+                    Text("Logout")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "Your Trips",
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyColumn {
+                items(trips.value) { trip ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 6.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        Text(
+                            text = trip,
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+            }
+        }
     }
 }

@@ -43,8 +43,9 @@ class MainActivity : ComponentActivity() {
                                 CreateAccountScreen(navController)
                             }
                             composable(Routes.HomeScreen) {
-                                HomeScreen()
+                                HomeScreen(navController = navController) // ✅ pass it here
                             }
+
                         }
                     )
                 }
