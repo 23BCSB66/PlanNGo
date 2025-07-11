@@ -33,7 +33,7 @@ class UserViewModel : ViewModel() {
         }
 
         val user = User(
-            id = id,
+            uid = id,
             firstname = fname,
             lastname = lname,
             email = email,

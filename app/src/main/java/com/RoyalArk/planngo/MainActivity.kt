@@ -18,6 +18,8 @@ import com.RoyalArk.planngo.screen.auth.SignInScreen
 import com.RoyalArk.planngo.screen.auth.WelcomeScreen
 import com.RoyalArk.planngo.screen.home.HomeScreen
 import com.RoyalArk.planngo.screen.profile.ProfileScreen
+import com.RoyalArk.planngo.screen.reminder.ReminderScreen
+import com.RoyalArk.planngo.screen.trip.NewTripScreen
 import com.RoyalArk.planngo.screen.trip.TripScreen
 import com.RoyalArk.planngo.ui.theme.PlanNGoTheme
 
@@ -52,13 +54,11 @@ class MainActivity : ComponentActivity() {
                             composable(Routes.ProfileScreen) {
                                 ProfileScreen(navController)
                             }
-                            composable("None") {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ){
-                                    Text("Not Designed")
-                                }
+                            composable(Routes.NewTripScreen) {
+                                NewTripScreen(navController)
+                            }
+                            composable(Routes.ReminderScreen) {
+                                ReminderScreen(navController)
                             }
                         }
                     )
@@ -76,4 +76,6 @@ object Routes {
     var HomeScreen = "HomeScreen"
     var ProfileScreen = "ProfileScreen"
     var TripScreen = "TripScreen"
+    var ReminderScreen = "ReminderScreen"
+    var NewTripScreen = "NewTripScreen"
 }

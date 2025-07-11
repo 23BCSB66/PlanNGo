@@ -11,10 +11,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Divider
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -24,9 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.RoyalArk.planngo.R
 import com.RoyalArk.planngo.Routes
 
 @Composable
@@ -51,7 +49,7 @@ fun BottomNavBar(navController: NavController, selectedItem: String) {
             ) {
                 BottomMenuIcon(
                     "Home",
-                    icon = Icons.Default.Home,
+                    icon = painterResource(R.drawable.home),
                     contentDesc = "Home",
                     route = Routes.HomeScreen,
                     selectedItem = selectedItem,
@@ -59,7 +57,7 @@ fun BottomNavBar(navController: NavController, selectedItem: String) {
                 )
                 BottomMenuIcon(
                     "Trips",
-                    icon = Icons.Default.Star,
+                    icon = painterResource(R.drawable.trip),
                     contentDesc = "Trips",
                     route = Routes.TripScreen,
                     selectedItem = selectedItem,
@@ -69,16 +67,16 @@ fun BottomNavBar(navController: NavController, selectedItem: String) {
                 Spacer(modifier = Modifier.width(48.dp)) // Spacer for FAB
 
                 BottomMenuIcon(
-                    "None",
-                    icon = Icons.Default.Menu,
-                    contentDesc = "Save",
-                    route = "None", // Replace if needed
+                    "Reminder",
+                    icon = painterResource(R.drawable.reminder),
+                    contentDesc = "Reminder",
+                    route = Routes.ReminderScreen, // Replace if needed
                     selectedItem = selectedItem,
                     navController = navController
                 )
                 BottomMenuIcon(
                     "Profile",
-                    icon = Icons.Default.Person,
+                    icon = painterResource(R.drawable.person),
                     contentDesc = "Profile",
                     route = Routes.ProfileScreen,
                     selectedItem = selectedItem,
@@ -93,15 +91,11 @@ fun BottomNavBar(navController: NavController, selectedItem: String) {
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 40.dp)
                 .offset(y = (-24).dp)
-                .shadow(
-                    elevation = 20.dp,
-                    shape = CircleShape,
-                    clip = true
-                )
                 .clip(CircleShape)
         ) {
             FloatingActionButton(
                 onClick = {
+                    navController.navigate(Routes.NewTripScreen)
                 },
                 modifier = Modifier
                     .size(60.dp),
@@ -124,7 +118,7 @@ fun BottomNavBar(navController: NavController, selectedItem: String) {
 @Composable
 fun BottomMenuIcon(
     label: String,
-    icon: ImageVector,
+    icon: Painter,
     contentDesc: String,
     route: String,
     selectedItem: String,
@@ -148,7 +142,7 @@ fun BottomMenuIcon(
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
-            imageVector = icon,
+            painter = icon,
             contentDescription = contentDesc,
             modifier = Modifier.size(20.dp),
             tint = if (isSelected) MaterialTheme.colorScheme.primary
