@@ -1,4 +1,3 @@
-
 package com.RoyalArk.planngo.screen.home
 
 import androidx.compose.foundation.layout.*
@@ -12,14 +11,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.RoyalArk.planngo.Routes
-import com.google.firebase.auth.FirebaseAuth
+import com.RoyalArk.planngo.ui.view.BottomNavBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
-    val user = FirebaseAuth.getInstance().currentUser
-    val displayName = user?.displayName ?: "Traveler"
-
     val trips = remember {
         mutableStateOf(
             listOf("Goa Trip", "Manali Tour", "Europe Backpacking")
@@ -27,10 +23,11 @@ fun HomeScreen(navController: NavController) {
     }
 
     Scaffold(
+        bottomBar = { BottomNavBar(navController,Routes.HomeScreen) },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                // TODO: Navigate to CreateTripScreen
-            }) {
+            FloatingActionButton(
+                onClick = {}
+            ) {
                 Text("+")
             }
         }
@@ -48,12 +45,11 @@ fun HomeScreen(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("Hi, $displayName!", fontSize = 24.sp)
+                    Text("Hi,!", fontSize = 24.sp)
                     Text("Plan your next trip easily.")
                 }
 
                 Button(onClick = {
-                    FirebaseAuth.getInstance().signOut()
                     navController.navigate(Routes.WelcomeScreen) {
                         popUpTo(Routes.HomeScreen) { inclusive = true }
                     }
