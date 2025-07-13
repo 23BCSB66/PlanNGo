@@ -1,6 +1,5 @@
 package com.RoyalArk.planngo.screen.trip
 
-import android.app.DatePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,14 +15,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,14 +42,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.RoyalArk.planngo.R
 import com.RoyalArk.planngo.Routes
 import com.RoyalArk.planngo.data.model.Trip
 import com.RoyalArk.planngo.viewmodel.TripViewModel
-import java.util.Calendar
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
 
 @Composable
 fun NewTripScreen(
@@ -58,16 +68,14 @@ fun NewTripScreen(
 
     LaunchedEffect(tripCreatedId) {
         tripCreatedId?.let {
-//            navController.navigate("trip_detail/$it")
-            navController.navigate(Routes.HomeScreen)
+            navController.navigate(Routes.TripDetailsScreen + "/$it")
             tripViewModel.resetState()
         }
     }
 
     LaunchedEffect(tripJoinedId) {
         tripJoinedId?.let {
-//            navController.navigate("trip_detail/$it")
-            navController.navigate(Routes.HomeScreen)
+            navController.navigate(Routes.TripDetailsScreen + "/$it")
             tripViewModel.resetState()
         }
     }
@@ -142,6 +150,7 @@ enum class TripTab(val label: String) {
     JOIN("Join Trip")
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateTripForm(onCreate: (Trip) -> Unit) {
     var title by remember { mutableStateOf("") }
@@ -149,38 +158,37 @@ fun CreateTripForm(onCreate: (Trip) -> Unit) {
     var startDate by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("") }
 
-    val context = LocalContext.current
-    val showStartDateDialog = remember { mutableStateOf(false) }
-    val showEndDateDialog = remember { mutableStateOf(false) }
+    var datePickerController by remember { mutableStateOf(false) }
+    var isStartDatePicker by remember { mutableStateOf(true) }
+    val dateState = rememberDatePickerState()
 
-// Show start date picker
-    if (showStartDateDialog.value) {
-        val calendar = Calendar.getInstance()
+    if (datePickerController) {
         DatePickerDialog(
-            context,
-            { _, year, month, day ->
-                startDate = "$year-${month + 1}-$day"
-                showStartDateDialog.value = false
+            onDismissRequest = { datePickerController = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        if (isStartDatePicker) {
+                            startDate = dateState.selectedDateMillis?.let { formatDate(it) } ?: ""
+                        } else {
+                            endDate = dateState.selectedDateMillis?.let { formatDate(it) } ?: ""
+                        }
+                        datePickerController = false
+                    }
+                ) {
+                    Text("Confirm")
+                }
             },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
-    }
-
-// Show end date picker
-    if (showEndDateDialog.value) {
-        val calendar = Calendar.getInstance()
-        DatePickerDialog(
-            context,
-            { _, year, month, day ->
-                endDate = "$year-${month + 1}-$day"
-                showEndDateDialog.value = false
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
+            dismissButton = {
+                TextButton(
+                    onClick = { datePickerController = false }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = dateState)
+        }
     }
 
     Column(
@@ -201,7 +209,6 @@ fun CreateTripForm(onCreate: (Trip) -> Unit) {
             modifier = Modifier.fillMaxWidth()
         )
 
-
         // Start Date
         OutlinedTextField(
             value = startDate,
@@ -211,17 +218,21 @@ fun CreateTripForm(onCreate: (Trip) -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    val calendar = Calendar.getInstance()
-                    DatePickerDialog(
-                        context,
-                        { _, year, month, dayOfMonth ->
-                            startDate = "$year-${month + 1}-$dayOfMonth"
-                        },
-                        calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH)
-                    ).show()
-                }
+                    isStartDatePicker = true
+                    datePickerController = true
+                },
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.datepicker),
+                    contentDescription = "Date Picker",
+                    modifier = Modifier
+                        .size(25.dp)
+                        .clickable{
+                        isStartDatePicker = true
+                        datePickerController = true
+                    }
+                )
+            }
         )
 
         // End Date
@@ -233,18 +244,23 @@ fun CreateTripForm(onCreate: (Trip) -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    val calendar = Calendar.getInstance()
-                    DatePickerDialog(
-                        context,
-                        { _, year, month, dayOfMonth ->
-                            endDate = "$year-${month + 1}-$dayOfMonth"
-                        },
-                        calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH)
-                    ).show()
-                }
+                    isStartDatePicker = false
+                    datePickerController = true
+                },
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.datepicker),
+                    contentDescription = "Date Picker",
+                    modifier = Modifier
+                        .size(25.dp)
+                        .clickable{
+                        isStartDatePicker = false
+                        datePickerController = true
+                    }
+                )
+            }
         )
+
 
         Button(
             onClick = {
@@ -267,47 +283,12 @@ fun CreateTripForm(onCreate: (Trip) -> Unit) {
     }
 }
 
-
-@Composable
-fun DatePickerDialogExample() {
-    var selectedDate by remember { mutableStateOf("") }
-    val context = LocalContext.current
-
-    val calendar = Calendar.getInstance()
-
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH)
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = "Selected date: $selectedDate")
-
-        OutlinedTextField(
-            value = selectedDate,
-            onValueChange = {},
-            label = { Text("Pick a Date") },
-            readOnly = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    DatePickerDialog(
-                        context,
-                        { _, y, m, d ->
-                            selectedDate = "$y-${m + 1}-$d"
-                        },
-                        year,
-                        month,
-                        day
-                    ).show()
-                }
-        )
-    }
+// Helper function to format the date
+fun formatDate(millis: Long): String {
+    val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+    return dateFormat.format(Date(millis))
 }
+
 
 @Composable
 fun JoinTripForm(onJoin: (String) -> Unit) {
