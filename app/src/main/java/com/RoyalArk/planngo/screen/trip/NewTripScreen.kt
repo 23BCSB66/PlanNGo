@@ -1,5 +1,6 @@
 package com.RoyalArk.planngo.screen.trip
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -68,14 +69,22 @@ fun NewTripScreen(
 
     LaunchedEffect(tripCreatedId) {
         tripCreatedId?.let {
-            navController.navigate(Routes.TripDetailsScreen + "/$it")
+            navController.navigate(Routes.TripDetailsScreen + "/$it") {
+                popUpTo(Routes.NewTripScreen) {
+                    inclusive = true
+                }
+            }
             tripViewModel.resetState()
         }
     }
 
     LaunchedEffect(tripJoinedId) {
         tripJoinedId?.let {
-            navController.navigate(Routes.TripDetailsScreen + "/$it")
+            navController.navigate(Routes.TripDetailsScreen + "/$it") {
+                popUpTo(Routes.NewTripScreen) {
+                    inclusive = true
+                }
+            }
             tripViewModel.resetState()
         }
     }
@@ -161,6 +170,7 @@ fun CreateTripForm(onCreate: (Trip) -> Unit) {
     var datePickerController by remember { mutableStateOf(false) }
     var isStartDatePicker by remember { mutableStateOf(true) }
     val dateState = rememberDatePickerState()
+    val context = LocalContext.current
 
     if (datePickerController) {
         DatePickerDialog(
@@ -227,10 +237,10 @@ fun CreateTripForm(onCreate: (Trip) -> Unit) {
                     contentDescription = "Date Picker",
                     modifier = Modifier
                         .size(25.dp)
-                        .clickable{
-                        isStartDatePicker = true
-                        datePickerController = true
-                    }
+                        .clickable {
+                            isStartDatePicker = true
+                            datePickerController = true
+                        }
                 )
             }
         )
@@ -253,10 +263,10 @@ fun CreateTripForm(onCreate: (Trip) -> Unit) {
                     contentDescription = "Date Picker",
                     modifier = Modifier
                         .size(25.dp)
-                        .clickable{
-                        isStartDatePicker = false
-                        datePickerController = true
-                    }
+                        .clickable {
+                            isStartDatePicker = false
+                            datePickerController = true
+                        }
                 )
             }
         )
@@ -264,13 +274,36 @@ fun CreateTripForm(onCreate: (Trip) -> Unit) {
 
         Button(
             onClick = {
-                val trip = Trip(
-                    title = title,
-                    destination = destination,
-                    startDate = startDate,
-                    endDate = endDate
-                )
-                onCreate(trip)
+                val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                try {
+                    val start = dateFormat.parse(startDate)
+                    val end = dateFormat.parse(endDate)
+
+                    if (start == null || end == null) {
+                        Toast.makeText(context, "Invalid date format", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    if (start.after(end)) {
+                        Toast.makeText(
+                            context,
+                            "Start date must be before end date",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@Button
+                    }
+
+                    val trip = Trip(
+                        title = title,
+                        destination = destination,
+                        startDate = startDate,
+                        endDate = endDate
+                    )
+                    onCreate(trip)
+
+                } catch (e: Exception) {
+                    Toast.makeText(context, "Error parsing date", Toast.LENGTH_SHORT).show()
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = title.isNotBlank() &&
