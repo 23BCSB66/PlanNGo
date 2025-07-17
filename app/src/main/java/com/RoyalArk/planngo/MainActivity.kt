@@ -14,6 +14,7 @@ import com.RoyalArk.planngo.screen.auth.CreateAccountScreen
 import com.RoyalArk.planngo.screen.auth.SignInScreen
 import com.RoyalArk.planngo.screen.auth.WelcomeScreen
 import com.RoyalArk.planngo.screen.home.HomeScreen
+import com.RoyalArk.planngo.screen.profile.EditProfileScreen
 import com.RoyalArk.planngo.screen.profile.ProfileScreen
 import com.RoyalArk.planngo.screen.reminder.ReminderScreen
 import com.RoyalArk.planngo.screen.trip.NewTripScreen
@@ -62,6 +63,10 @@ class MainActivity : ComponentActivity() {
                                 val id = backStackEntry.arguments?.getString("id") ?: return@composable
                                 TripDetailsScreen(id,navController)
                             }
+
+                            composable(Routes.EditProfileScreen) {
+                                EditProfileScreen(navController)
+                            }
                         }
                     )
                 }
@@ -81,4 +86,5 @@ object Routes {
     var ReminderScreen = "ReminderScreen"
     var NewTripScreen = "NewTripScreen"
     var TripDetailsScreen = "TripDetailsScreen"
+    var EditProfileScreen = "EditProfileScreen"
 }
