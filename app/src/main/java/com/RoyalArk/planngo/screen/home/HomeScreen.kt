@@ -28,15 +28,10 @@ import com.RoyalArk.planngo.Routes
 import com.RoyalArk.planngo.ui.view.BottomNavBar
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
-    val trips = remember {
-        mutableStateOf(
-            listOf("Goa Trip", "Manali Tour", "Europe Backpacking")
-        )
-    }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         bottomBar = { BottomNavBar(navController, Routes.HomeScreen) }
@@ -45,7 +40,8 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(top = 55.dp, start = 16.dp,end = 16.dp)
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp)
         ) {
 
             Row(
@@ -79,7 +75,7 @@ fun HomeScreen(navController: NavController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFFF2F2F2), shape = RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(12.dp))
                     .padding(horizontal = 12.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -92,14 +88,16 @@ fun HomeScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-
-            var searchQuery by rememberSaveable { mutableStateOf("") }
-
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 placeholder = { Text("Search destination, etc...") },
-                leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = null) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -107,9 +105,9 @@ fun HomeScreen(navController: NavController) {
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
-                    focusedContainerColor = Color(0xFFF2F2F2),
-                    unfocusedContainerColor = Color(0xFFF2F2F2),
-                    disabledContainerColor = Color(0xFFF2F2F2)
+                    focusedContainerColor = MaterialTheme.colorScheme.secondary,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.secondary,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondary
                 )
 
             )
