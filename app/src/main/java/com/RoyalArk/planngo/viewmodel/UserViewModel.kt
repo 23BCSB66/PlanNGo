@@ -50,4 +50,58 @@ class UserViewModel : ViewModel() {
             }
     }
 
+
+    fun fetchCurrentUser() {
+        val uid = currentUserId ?: return
+        usersCollection.document(uid)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    _user.value = document.toObject(User::class.java)
+                    Log.d("UserViewModel", "✅ Fetched user: ${_user.value}")
+                } else {
+                    Log.w("UserViewModel", "⚠️ No user found with uid $uid")
+                    _user.value = null
+                }
+            }
+            .addOnFailureListener { error ->
+                Log.e("UserViewModel", "❌ Failed to fetch user: ${error.message}")
+                _user.value = null
+            }
+    }
+
+
+    fun updateUser(
+        firstname: String,
+        lastname: String,
+        phoneNumber: String,
+        gender: String,
+        onResult: (Boolean, String?) -> Unit
+    ) {
+        val uid = currentUserId
+        if (uid == null) {
+            onResult(false, "User ID missing")
+            return
+        }
+
+        val updates = mapOf(
+            "firstname" to firstname,
+            "lastname" to lastname,
+            "phoneNumber" to phoneNumber,
+            "gender" to gender
+        )
+
+        usersCollection.document(uid)
+            .update(updates)
+            .addOnSuccessListener {
+                Log.d("UserViewModel", "✅ User fields updated: $updates")
+                fetchCurrentUser() // Optional: refresh LiveData
+                onResult(true, null)
+            }
+            .addOnFailureListener { error ->
+                Log.e("UserViewModel", "❌ Failed to update user: ${error.message}")
+                onResult(false, error.message)
+            }
+    }
+
 }

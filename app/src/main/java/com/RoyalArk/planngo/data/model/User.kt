@@ -8,6 +8,8 @@ data class User(
     val firstname: String = "",
     val lastname: String = "",
     val email: String = "",
+    val gender: String = "",
+    val phoneNumber : String = "",
     val profileImageUrl: String? = null,
     val joinedTrips: List<String> = emptyList(),
     val pendingInvites: List<String> = emptyList(),

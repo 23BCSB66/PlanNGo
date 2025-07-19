@@ -29,13 +29,15 @@ import com.RoyalArk.planngo.Routes
 
 @Composable
 fun BottomNavBar(navController: NavController, selectedItem: String) {
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(110.dp)
+                .navigationBarsPadding()
                 .clipToBounds()
-                .padding(bottom = 45.dp, top = 15.dp)
         ) {
             Divider(color = MaterialTheme.colorScheme.onBackground)
             Spacer(Modifier.height(10.dp))
@@ -70,7 +72,7 @@ fun BottomNavBar(navController: NavController, selectedItem: String) {
                     "Reminder",
                     icon = painterResource(R.drawable.reminder),
                     contentDesc = "Reminder",
-                    route = Routes.ReminderScreen, // Replace if needed
+                    route = Routes.ReminderScreen,
                     selectedItem = selectedItem,
                     navController = navController
                 )
@@ -89,7 +91,7 @@ fun BottomNavBar(navController: NavController, selectedItem: String) {
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 40.dp)
+                .navigationBarsPadding()
                 .offset(y = (-24).dp)
                 .clip(CircleShape)
         ) {
