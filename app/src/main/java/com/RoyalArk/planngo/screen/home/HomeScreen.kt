@@ -4,16 +4,23 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -24,12 +31,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,7 +50,6 @@ import coil.compose.AsyncImage
 import com.RoyalArk.planngo.R
 import com.RoyalArk.planngo.Routes
 import com.RoyalArk.planngo.data.model.LocationSuggestion
-import com.RoyalArk.planngo.data.model.PlaceRecommendation
 import com.RoyalArk.planngo.data.model.UnsplashImage
 import com.RoyalArk.planngo.ui.view.BottomNavBar
 import com.RoyalArk.planngo.ui.view.LocationPermissionHandler
@@ -68,6 +78,10 @@ fun HomeScreen(
     val beautifulPlacesViewModel: BeautifulPlacesViewModel = viewModel()
     val beautifulPlaces by beautifulPlacesViewModel.places.observeAsState(emptyList())
 
+    val focusManager = LocalFocusManager.current
+    val textFieldFocusRequester = remember { FocusRequester() }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isTextFieldFocused by interactionSource.collectIsFocusedAsState()
 
     LaunchedEffect(authState) {
         when (authState) {
@@ -92,6 +106,12 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
                 .padding(top = 16.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                }
         ) {
             LocationPermissionHandler()
             Row(
@@ -135,9 +155,17 @@ fun HomeScreen(
                 leadingIcon = {
                     Icon(imageVector = Icons.Default.Search, contentDescription = null)
                 },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { searchQuery = "" }) {
+                            Icon(Icons.Default.Close, contentDescription = "Clear")
+                        }
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(56.dp)
+                    .focusRequester(textFieldFocusRequester),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.Transparent,
@@ -145,19 +173,34 @@ fun HomeScreen(
                     focusedContainerColor = MaterialTheme.colorScheme.secondary,
                     unfocusedContainerColor = MaterialTheme.colorScheme.secondary,
                     disabledContainerColor = MaterialTheme.colorScheme.secondary
+                ),
+                interactionSource = interactionSource,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Search
+                ),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        if (searchQuery.isNotBlank()) {
+                            suggestionViewModel.clearSuggestions()
+                            beautifulPlacesViewModel.fetchBeautifulPlaces(searchQuery.trim())
+                        }
+                        focusManager.clearFocus()
+                    }
                 )
             )
 
-            LocationSuggestionsCard(
-                suggestions = suggestions,
-                onSuggestionClick = { suggestion ->
-                    searchQuery = suggestion.display_name
-                    suggestionViewModel.clearSuggestions()
+            if (suggestions.isNotEmpty() && isTextFieldFocused) {
+                LocationSuggestionsCard(
+                    suggestions = suggestions,
+                    onSuggestionClick = { suggestion ->
+                        searchQuery = suggestion.display_name
+                        suggestionViewModel.clearSuggestions()
 
-                    // 🔥 Fetch images based on selected location
-                    beautifulPlacesViewModel.fetchBeautifulPlaces(suggestion.display_name)
-                }
-            )
+                        beautifulPlacesViewModel.fetchBeautifulPlaces(suggestion.display_name)
+                        focusManager.clearFocus()
+                    }
+                )
+            }
 
             BeautifulPlacesCardList(places = beautifulPlaces)
 

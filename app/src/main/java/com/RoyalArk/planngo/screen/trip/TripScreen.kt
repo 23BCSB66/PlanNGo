@@ -1,7 +1,11 @@
 package com.RoyalArk.planngo.screen.trip
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,11 +20,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -40,8 +44,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -68,6 +76,7 @@ fun TripScreen(
     val currentUser = tripViewModel.currentUserId.value
     val allTrips = (created + joined).distinctBy { it.id }
 
+    val focusManager = LocalFocusManager.current
     var selectedFilter by remember { mutableStateOf(TripFilterType.ALL) }
     var searchQuery by remember { mutableStateOf("") }
     var debouncedQuery by remember { mutableStateOf("") }
@@ -123,6 +132,12 @@ fun TripScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(top = 16.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                }
         ) {
             //Search Bar
             OutlinedTextField(
@@ -164,13 +179,20 @@ fun TripScreen(
                 }
             }
 
+
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 if (filteredTrips.isEmpty()) {
                     item {
-                        Text(
-                            "No trips found for selected filter.",
-                            modifier = Modifier.padding(16.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .fillParentMaxHeight()
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            NoTripCard(onClick = {
+                                navController.navigate(Routes.NewTripScreen)
+                            })
+                        }
                     }
                 } else {
                     items(filteredTrips) { trip ->
@@ -241,5 +263,44 @@ fun TripCard(trip: Trip, onClick: (Trip) -> Unit) {
                 )
             }
         }
+    }
+}
+
+@Composable
+fun NoTripCard(onClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(R.drawable.no_trips),
+            contentDescription = "No trips",
+            modifier = Modifier.size(120.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "No trips found for selected filter.",
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = MaterialTheme.colorScheme.onBackground
+            ),
+            textAlign = TextAlign.Center
+        )
+
+        ClickableText(
+            text = AnnotatedString(
+                "Create New Trip",
+                spanStyle = SpanStyle(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            ),
+            onClick = { onClick() },
+            modifier = Modifier.padding(top = 12.dp)
+        )
     }
 }
