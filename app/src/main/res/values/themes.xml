@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <style name="Theme.MySplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/logo_bg</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/full_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.PlanNGo</item>
+    </style>
     <style name="Theme.PlanNGo" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
