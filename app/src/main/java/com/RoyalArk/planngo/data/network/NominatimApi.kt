@@ -4,7 +4,7 @@ import com.RoyalArk.planngo.data.model.LocationSuggestion
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface PlanNGoApi {
+interface NominatimApi {
     @GET("search")
     suspend fun getSuggestions(
         @Query("q") query: String,

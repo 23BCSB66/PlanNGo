@@ -21,5 +21,5 @@ object NominatimRetrofitInstance {
             .build()
     }
 
-    val api: PlanNGoApi = retrofit.create(PlanNGoApi::class.java)
+    val api: NominatimApi = retrofit.create(NominatimApi::class.java)
 }
