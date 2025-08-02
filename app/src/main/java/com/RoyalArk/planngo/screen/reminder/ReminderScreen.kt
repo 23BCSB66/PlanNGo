@@ -84,7 +84,7 @@ fun EmptyReminderCard(){
             Text(
                 text = "Nothing in Your Reminders",
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
+                fontSize = 15.sp,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onBackground
             )

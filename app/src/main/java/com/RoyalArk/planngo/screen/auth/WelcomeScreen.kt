@@ -1,6 +1,8 @@
 package com.RoyalArk.planngo.screen.auth
 
+import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -13,16 +15,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ComponentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.RoyalArk.planngo.Routes
+import com.RoyalArk.planngo.ui.view.ExitConfirmationDialog
 import com.RoyalArk.planngo.viewmodel.AuthState
 import com.RoyalArk.planngo.viewmodel.AuthViewModel
 
 
+@SuppressLint("RestrictedApi")
 @Composable
 fun WelcomeScreen(navController: NavController, authViewModel: AuthViewModel = viewModel()) {
     var loading by remember { mutableStateOf(true) }
@@ -38,6 +44,24 @@ fun WelcomeScreen(navController: NavController, authViewModel: AuthViewModel = v
             is AuthState.Unauthenticated -> loading = false
             else -> Unit
         }
+    }
+
+    val context = LocalContext.current
+    val activity = context as? ComponentActivity
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = true) {
+        showExitDialog = true
+    }
+
+    if (showExitDialog) {
+        ExitConfirmationDialog(
+            onDismissRequest = { showExitDialog = false },
+            onConfirmExit = {
+                showExitDialog = false
+                activity?.finish()
+            }
+        )
     }
 
     if (loading) {

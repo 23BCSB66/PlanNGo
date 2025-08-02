@@ -1,6 +1,5 @@
 package com.RoyalArk.planngo.screen.auth
 
-import android.net.Uri
 import android.widget.Toast
 import android.widget.Toast.makeText
 import androidx.compose.foundation.background

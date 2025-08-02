@@ -17,10 +17,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -36,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -80,39 +85,6 @@ fun SignInScreen(navController: NavController, authViewModel: AuthViewModel = vi
         }
     }
 
-    val activity = context as? ComponentActivity
-
-    var showExitDialog by remember { mutableStateOf(false) }
-    BackHandler(enabled = authState.value is AuthState.Unauthenticated) {
-        showExitDialog = true
-    }
-
-    if (showExitDialog) {
-        AlertDialog(
-            onDismissRequest = { showExitDialog = false },
-            title = { Text("Exit App") },
-            text = { Text("Are you sure you want to exit the app?") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showExitDialog = false
-                        activity?.finish()
-                    }
-                ) {
-                    Text("Yes", fontSize = 17.sp)
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        showExitDialog = false
-                    }
-                ) {
-                    Text("No", fontSize = 17.sp)
-                }
-            }
-        )
-    }
 
     if (loading) {
         Box(
@@ -125,9 +97,29 @@ fun SignInScreen(navController: NavController, authViewModel: AuthViewModel = vi
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp, vertical = 120.dp)
+                .padding(horizontal = 20.dp, vertical = 60.dp)
                 .background(MaterialTheme.colorScheme.background)
         ) {
+            IconButton(
+                onClick = {
+                    navController.popBackStack()
+                },
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.secondary)
+                    .scale(.75f)
+            ) {
+                Icon(
+                    Icons.Filled.KeyboardArrowLeft,
+                    contentDescription = "Keyboard Arrow Left button",
+                    modifier = Modifier.size(30.dp),
+                    tint = MaterialTheme.colorScheme.onSecondary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(15.dp))
+
             Text(
                 text = "Sign in",
                 fontWeight = FontWeight.Bold,

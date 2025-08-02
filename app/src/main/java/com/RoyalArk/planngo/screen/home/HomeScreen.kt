@@ -1,6 +1,8 @@
 package com.RoyalArk.planngo.screen.home
 
+import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,14 +46,17 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ComponentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.RoyalArk.planngo.R
 import com.RoyalArk.planngo.Routes
+import com.RoyalArk.planngo.data.model.Activity
 import com.RoyalArk.planngo.data.model.LocationSuggestion
 import com.RoyalArk.planngo.data.model.UnsplashImage
 import com.RoyalArk.planngo.ui.view.BottomNavBar
+import com.RoyalArk.planngo.ui.view.ExitConfirmationDialog
 import com.RoyalArk.planngo.ui.view.LocationPermissionHandler
 import com.RoyalArk.planngo.viewmodel.AuthState
 import com.RoyalArk.planngo.viewmodel.AuthViewModel
@@ -61,6 +66,7 @@ import com.RoyalArk.planngo.viewmodel.LocationViewModel
 import com.RoyalArk.planngo.viewmodel.UserViewModel
 
 
+@SuppressLint("RestrictedApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -95,7 +101,23 @@ fun HomeScreen(
         }
     }
 
+    val context = LocalContext.current
+    val activity = context as? ComponentActivity
+    var showExitDialog by remember { mutableStateOf(false) }
 
+    BackHandler(enabled = true) {
+        showExitDialog = true
+    }
+
+    if (showExitDialog) {
+        ExitConfirmationDialog(
+            onDismissRequest = { showExitDialog = false },
+            onConfirmExit = {
+                showExitDialog = false
+                activity?.finish()
+            }
+        )
+    }
 
     Scaffold(
         bottomBar = { BottomNavBar(navController, Routes.HomeScreen) }
