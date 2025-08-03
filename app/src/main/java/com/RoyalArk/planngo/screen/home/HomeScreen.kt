@@ -224,7 +224,7 @@ fun HomeScreen(
                 )
             }
 
-            BeautifulPlacesCardList(places = beautifulPlaces)
+            BeautifulPlacesCardList(places = beautifulPlaces, navController)
 
         }
     }
@@ -297,7 +297,7 @@ fun LocationSuggestionsCard(
 
 
 @Composable
-fun BeautifulPlacesCardList(places: List<UnsplashImage>) {
+fun BeautifulPlacesCardList(places: List<UnsplashImage>, navController: NavController) {
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
     val columns = when {
@@ -318,13 +318,15 @@ fun BeautifulPlacesCardList(places: List<UnsplashImage>) {
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
                 .fillMaxSize()
-//                .padding(bottom = 64.dp)
         ) {
             items(places) { place ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(220.dp),
+                        .height(220.dp)
+                        .clickable {
+                            navController.navigate(Routes.PlaceDetailsScreen + "/${place.id}")
+                        },
                     shape = RoundedCornerShape(16.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
                 ) {
