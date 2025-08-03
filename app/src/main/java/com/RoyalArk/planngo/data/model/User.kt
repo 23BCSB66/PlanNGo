@@ -15,3 +15,11 @@ data class User(
     val pendingInvites: List<String> = emptyList(),
     val createdAt: Long = System.currentTimeMillis()
 )
+
+
+@Serializable
+data class ReminderItem(
+    val message: String = "",
+    val timestamp: Long = System.currentTimeMillis(),
+    val seen: Boolean = false
+)
