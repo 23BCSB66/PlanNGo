@@ -31,6 +31,7 @@ import com.RoyalArk.planngo.screen.trip.TripDetailsScreen
 import com.RoyalArk.planngo.screen.trip.TripScreen
 import com.RoyalArk.planngo.ui.theme.PlanNGoTheme
 
+const val PLACE_DETAILS_ROUTE = "place_details"
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,6 +114,10 @@ class MainActivity : ComponentActivity() {
                             composable("${Routes.Map}/{tripId}") {
                                 val tripId = it.arguments?.getString("tripId") ?: return@composable
                                 MapTab(tripId, navController)
+                            }
+                            composable("$PLACE_DETAILS_ROUTE/{id}") { backStackEntry ->
+                                val id = backStackEntry.arguments?.getString("id") ?: return@composable
+                                PlaceDetailsScreen(id = id, navController = navController)
                             }
 
                             composable("${Routes.Chat}/{tripId}") {

@@ -65,6 +65,7 @@ import com.RoyalArk.planngo.viewmodel.LocationSuggestionViewModel
 import com.RoyalArk.planngo.viewmodel.LocationViewModel
 import com.RoyalArk.planngo.viewmodel.UserViewModel
 
+const val PLACE_DETAILS_ROUTE = "place_details"
 
 @SuppressLint("RestrictedApi")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -325,7 +326,8 @@ fun BeautifulPlacesCardList(places: List<UnsplashImage>, navController: NavContr
                         .fillMaxWidth()
                         .height(220.dp)
                         .clickable {
-                            navController.navigate(Routes.PlaceDetailsScreen + "/${place.id}")
+                            navController.navigate("$PLACE_DETAILS_ROUTE/${place.id}")
+
                         },
                     shape = RoundedCornerShape(16.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
